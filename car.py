@@ -4,7 +4,7 @@ import random
 
 pygame.init()
 display_h = 500
-display_w = 720
+display_w = 740
 black = (0,0,0)
 white = (255,255,255)
 car_width = 77
@@ -12,9 +12,22 @@ gameD = pygame.display.set_mode((display_w,display_h))
 pygame.display.set_caption('Watch Out')
 clock = pygame.time.Clock()
 carimg = pygame.image.load('1.png')
+carimg1 = pygame.image.load('2.png')
+carimg2 = pygame.image.load('3.png')
+carimg3 = pygame.image.load('4.png')
+carimg4 = pygame.image.load('6.png')
+carimg5 = pygame.image.load('7.png')
+carimg6 = pygame.image.load('5.png')
 
-def things(thingx, thingy, thingw, thingh, color):
-    pygame.draw.rect(gameD, color, [thingx, thingy, thingw, thingh])
+foo = [carimg1,carimg2,carimg3,carimg4,carimg5,carimg6]
+    
+def things_dodged(count):
+    font=pygame.font.SysFont(None, 25)
+    text=font.render("Dodged: "+ str(count), True, black)
+    gameD.blit(text, (0,0))
+
+def things(img, thingx, thingy):
+    gameD.blit(img, (thingx, thingy))
 
 def car(x,y):
     gameD.blit(carimg,(x,y))
@@ -47,9 +60,9 @@ def gameloop():
     thing_startx = random.randrange(0, display_w)
     thing_starty = -600
     thing_speed = 7
-    thing_width = 100
-    thing_height = 100
-
+    thing_width = 65
+    thing_height = 130
+    dodged=0
     while not gameexit:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -72,21 +85,26 @@ def gameloop():
         x+=x_change    
         y+=y_change
         gameD.fill(white)
-        things(thing_startx, thing_starty, thing_width, thing_height, black)
+        if thing_starty<-100:
+            img=random.choice(foo)    
+
+        things(img, thing_startx, thing_starty)
         thing_starty += thing_speed
         
         car(x,y)
-        
+        things_dodged(dodged)
         if x > display_w - car_width or x < 0:
             crash()
         
         if thing_starty > display_h:
             thing_starty = 0 - thing_height
             thing_startx = random.randrange(0, display_w)
+            img=random.choice(foo)    
+            dodged += 1
 
-        if y < thing_starty + thing_height:    
-            
-            if x>thing_startx and x<thing_startx +thing_width or x+car_width>thing_startx and x+car_width<thing_startx+thing_width:
+
+        if y < thing_starty + thing_height and y+155>thing_starty:    
+            if x>=thing_startx and x<=thing_startx +thing_width or x+car_width>=thing_startx and x+car_width<=thing_startx+thing_width:
                 crash()
         pygame.display.update()
         clock.tick(60)
