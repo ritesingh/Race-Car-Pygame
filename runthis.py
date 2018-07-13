@@ -227,8 +227,8 @@ def gameloop():
         things(img, img1, img2, thing_startx, thing_startx1, thing_startx2, thing_starty, thing_starty1, thing_starty2)
      
         thing_starty += thing_speed
-        thing_starty1 += 12
-        thing_starty2 += 15
+        thing_starty1 += 10
+        thing_starty2 += 13
 
         if thing_starty > display_h:
             thing_starty = 0 - thing_height
