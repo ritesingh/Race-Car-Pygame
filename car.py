@@ -4,7 +4,7 @@ import random
 
 pygame.init()
 display_h = 680
-display_w = 1350
+display_w = 1320
 black = (0,0,0)
 grey=(192,192,192)
 green=(0,200,0)
@@ -14,16 +14,19 @@ yellow=(200,200,0)
 bright_red=(255,0,0)
 white = (255,255,255)
 car_width = 77
+csound=pygame.mixer.Sound("crash.wav")
+pygame.mixer.music.load("jazz.wav")
 gameD = pygame.display.set_mode((display_w,display_h))
 pygame.display.set_caption('Watch Out')
 clock = pygame.time.Clock()
-carimg = pygame.image.load('1.png')
-carimg1 = pygame.image.load('2.png')
-carimg2 = pygame.image.load('3.png')
-carimg3 = pygame.image.load('4.png')
-carimg4 = pygame.image.load('6.png')
-carimg5 = pygame.image.load('7.png')
-carimg6 = pygame.image.load('5.png')
+imgroad = pygame.image.load('road2.jpg').convert_alpha()
+carimg = pygame.image.load('1.png').convert_alpha()
+carimg1 = pygame.image.load('2.png').convert_alpha()
+carimg2 = pygame.image.load('3.png').convert_alpha()
+carimg3 = pygame.image.load('4.png').convert_alpha()
+carimg4 = pygame.image.load('6.png').convert_alpha()
+carimg5 = pygame.image.load('7.png').convert_alpha()
+carimg6 = pygame.image.load('5.png').convert_alpha()
 
 foo = [carimg1,carimg2,carimg3,carimg4,carimg5,carimg6]
 
@@ -47,6 +50,56 @@ def button(msg,x,y,w,h,ic,ac,action=None):
 def quitgame():
     pygame.quit()
 
+pause = False
+
+
+def unpause():
+    global pause
+    pygame.mixer.music.unpause()
+    pause=False
+
+def crashed():
+   pygame.mixer.music.stop()
+   pygame.mixer.Sound.play(csound)
+   gameD.fill(yellow)
+   largeText = pygame.font.SysFont("comicsansms",115)
+   TextSurf, TextRect = text_objects("You Crashed", largeText)
+   TextRect.center = ((display_w/2),(display_h/2))
+   gameD.blit(TextSurf, TextRect)
+
+   while True:
+        for event in pygame.event.get():            
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+                
+
+        button("Play Again",350,450,100,50,green,bright_green,gameloop)
+        button("Quit",900,450,100,50,red,bright_red,quitgame)
+
+        pygame.display.update()
+        clock.tick(60)
+
+def paused():
+    pygame.mixer.music.pause()
+    while pause:
+        for event in pygame.event.get():            
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+                
+        gameD.fill(yellow)
+        largeText = pygame.font.SysFont("comicsansms",115)
+        TextSurf, TextRect = text_objects("Paused", largeText)
+        TextRect.center = ((display_w/2),(display_h/2))
+        gameD.blit(TextSurf, TextRect)
+
+        button("Continue",350,450,100,50,green,bright_green,unpause)
+        button("Quit",900,450,100,50,red,bright_red,quitgame)
+
+        pygame.display.update()
+        clock.tick(60)
+
 def game_intro():
     intro = True
 
@@ -67,7 +120,7 @@ def game_intro():
         button("Quit",900,450,100,50,red,bright_red,quitgame)
 
         pygame.display.update()
-        clock.tick(15)
+        clock.tick(60)
 
 
 def things_dodged(count):
@@ -76,6 +129,16 @@ def things_dodged(count):
     gameD.blit(text, (0,0))
 
 def things(img, thingx, thingy):
+    gameD.blit(img, (thingx, thingy))
+
+
+def things1(img, thingx, thingy):
+    thingx = random.randrange(0, display_w)
+    gameD.blit(img, (thingx, thingy))
+
+
+def things2(img, thingx, thingy):
+    thingx = random.randrange(0, display_w)
     gameD.blit(img, (thingx, thingy))
 
 def car(x,y):
@@ -94,14 +157,12 @@ def message_display(text):
     time.sleep(2)
     gameloop()
 
-def crash():
-    message_display("You Crashed!")
-
-
+image=random.choice(foo)
 def gameloop():
+    global pause
     x = (display_w * 0.45)
     y = (display_h * 0.7)
-
+    pygame.mixer.music.play(-1)
     gameexit = False
     
     x_change, y_change = 0, 0
@@ -128,23 +189,28 @@ def gameloop():
                     y_change = -5
                 elif event.key == pygame.K_DOWN:
                     y_change = 5
+                elif event.key==pygame.K_p:
+                    pause=True
+                    paused()    
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                     x_change=0
                     y_change=0    
         x+=x_change    
         y+=y_change
-        gameD.fill(grey)
+        #gameD.fill(grey)
+        gameD.blit(imgroad, (0, 0))
         if thing_starty<-500:
-            img=random.choice(foo)    
+            img=image    
 
         things(img, thing_startx, thing_starty)
+     
         thing_starty += thing_speed
         
         car(x,y)
         things_dodged(dodged)
         if x > display_w - car_width or x < 0 or y<0 or y>display_h:
-            crash()
+            crashed()
         
         if thing_starty > display_h:
             thing_starty = 0 - thing_height
@@ -155,7 +221,7 @@ def gameloop():
 
         if y < thing_starty + thing_height and y+155>thing_starty:    
             if x>=thing_startx and x<=thing_startx +thing_width or x+car_width>=thing_startx and x+car_width<=thing_startx+thing_width:
-                crash()
+                crashed()
         pygame.display.update()
         clock.tick(60)
 
