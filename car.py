@@ -128,19 +128,18 @@ def things_dodged(count):
     text=font.render("SCORE: "+ str(count), True, black)
     gameD.blit(text, (0,0))
 
-def things(img, thingx, thingy):
-    gameD.blit(img, (thingx, thingy))
+def things(img, img1, img2, thingx, thingx1, thingx2, thingy, thingy1, thingy2):
+    if thingx!=thingx1 and thingx!=thingx2:
+        gameD.blit(img, (thingx, thingy))
+    if thingx1!=thingx and thingx1!=thingx2:
+        gameD.blit(img1, (thingx1, thingy1))
+    if thingx2!=thingx and thingx2!=thingx1:
+        gameD.blit(img2, (thingx2, thingy2))
 
 
-def things1(img, thingx, thingy):
-    thingx = random.randrange(0, display_w)
-    gameD.blit(img, (thingx, thingy))
-
-
-def things2(img, thingx, thingy):
-    thingx = random.randrange(0, display_w)
-    gameD.blit(img, (thingx, thingy))
-
+def road(roady):
+    gameD.blit(imgroad, (0, roady))
+        
 def car(x,y):
     gameD.blit(carimg,(x,y))
 
@@ -156,8 +155,9 @@ def message_display(text):
     pygame.display.update()
     time.sleep(2)
     gameloop()
-
-image=random.choice(foo)
+def randimg():
+    image=random.choice(foo)
+    return image
 def gameloop():
     global pause
     x = (display_w * 0.45)
@@ -168,7 +168,13 @@ def gameloop():
     x_change, y_change = 0, 0
     
     thing_startx = random.randrange(0, display_w)
-    thing_starty = -600
+    thing_starty = -600   
+    thing_startx1 = random.randrange(0, display_w)
+    thing_starty1 = -800 
+    thing_startx2 = random.randrange(0, display_w)
+    thing_starty2 = -900   
+    roady = 0
+    roadyo = -680
     thing_speed = 7
     thing_width = 65
     thing_height = 130
@@ -199,28 +205,65 @@ def gameloop():
         x+=x_change    
         y+=y_change
         #gameD.fill(grey)
-        gameD.blit(imgroad, (0, 0))
+        
+        roady += 8
+        if roady>display_h:
+            roady=0
+            roadyo=-680
+        if roady>0:
+            gameD.blit(imgroad, (0,roady))
+            roadyo+=8
+            road(roadyo)
+        
         if thing_starty<-500:
-            img=image    
+            img = randimg() 
 
-        things(img, thing_startx, thing_starty)
+        if thing_starty1<-600:
+            img1 = randimg()
+
+        if thing_starty2<-700:
+            img2 = randimg()
+
+        things(img, img1, img2, thing_startx, thing_startx1, thing_startx2, thing_starty, thing_starty1, thing_starty2)
      
         thing_starty += thing_speed
-        
-        car(x,y)
-        things_dodged(dodged)
-        if x > display_w - car_width or x < 0 or y<0 or y>display_h:
-            crashed()
-        
+        thing_starty1 += 12
+        thing_starty2 += 15
+
         if thing_starty > display_h:
             thing_starty = 0 - thing_height
             thing_startx = random.randrange(0, display_w)
             img=random.choice(foo)    
             dodged += 1
 
+        if thing_starty1 > display_h:
+            thing_starty1 = 0 - thing_height
+            thing_startx1 = random.randrange(0, display_w)
+            img1=random.choice(foo)    
+            dodged += 1
+
+        if thing_starty2 > display_h:
+            thing_starty2 = 0 - thing_height
+            thing_startx2 = random.randrange(0, display_w)
+            img2=random.choice(foo)    
+            dodged += 1
+
+        car(x,y)
+        things_dodged(dodged)
+        if x > display_w - car_width or x < 0 or y<0 or y>display_h:
+            crashed()
+        
+
+
 
         if y < thing_starty + thing_height and y+155>thing_starty:    
             if x>=thing_startx and x<=thing_startx +thing_width or x+car_width>=thing_startx and x+car_width<=thing_startx+thing_width:
+                crashed()
+        if y < thing_starty1 + thing_height and y+155>thing_starty1:    
+            if x>=thing_startx1 and x<=thing_startx1 +thing_width or x+car_width>=thing_startx1 and x+car_width<=thing_startx1+thing_width:
+                crashed()
+        if y < thing_starty2 + thing_height and y+155>thing_starty2:    
+            if x>=thing_startx2 and x<=thing_startx2 +thing_width or x+car_width>=thing_startx2 and x+car_width<=thing_startx2+thing_width:
                 crashed()
         pygame.display.update()
         clock.tick(60)
