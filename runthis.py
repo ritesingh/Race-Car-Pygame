@@ -129,11 +129,11 @@ def things_dodged(count):
     gameD.blit(text, (0,0))
 
 def things(img, img1, img2, thingx, thingx1, thingx2, thingy, thingy1, thingy2):
-    if thingx!=thingx1 and thingx!=thingx2:
+    if thingx!=thingx1 and thingx!=thingx2 and thingx!=thingx1-2 and thingx!=thingx2+2 and thingx!=thingx1+3 and thingx!=thingx2-1:
         gameD.blit(img, (thingx, thingy))
-    if thingx1!=thingx and thingx1!=thingx2:
+    if thingx1!=thingx and thingx1!=thingx2 and thingx1!=thingx-2 and thingx1!=thingx2-1 and thingx1!=thingx+2 and thingx1!=thingx2+1:
         gameD.blit(img1, (thingx1, thingy1))
-    if thingx2!=thingx and thingx2!=thingx1:
+    if thingx2!=thingx and thingx2!=thingx1 and thingx2!=thingx-3 and thingx2!=thingx1-3 and thingx2!=thingx+1 and thingx2!=thingx1+1:
         gameD.blit(img2, (thingx2, thingy2))
 
 
@@ -155,9 +155,11 @@ def message_display(text):
     pygame.display.update()
     time.sleep(2)
     gameloop()
+
 def randimg():
     image=random.choice(foo)
     return image
+
 def gameloop():
     global pause
     x = (display_w * 0.45)
