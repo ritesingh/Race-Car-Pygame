@@ -1,6 +1,7 @@
 import pygame
 import time 
 import random
+import math
 
 pygame.init()
 display_h = 680
